@@ -1,1 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI Chat</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS & Typography Plugin -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- DOMPurify -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: '#09090b',
+                        surface: '#18181b',
+                        surfaceHover: '#27272a',
+                        border: '#27272a',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '.5' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #09090b;
+            color: #e4e4e7;
+        }
+
+        /* Beautiful minimalist scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        /* Ambient Glow Background */
+        .ambient-glow {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(60px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Markdown Styles Overrides for cleaner look */
+        .prose pre {
+            background-color: #18181b !important;
+            border: 1px solid #27272a;
+            border-radius: 0.75rem;
+        }
+        .prose code {
+            color: #a78bfa;
+            background-color: #18181b;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+        }
+        .prose pre code {
+            color: #e4e4e7;
+            background-color: transparent;
+            padding: 0;
+        }
+        .prose p {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            line-height: 1.6;
+        }
+        .prose p:first-child { margin-top: 0; }
+        .prose p:last-child { margin-bottom: 0; }
+
+        /* Loader */
+        .think-loader {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .think-loader span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #a1a1aa;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .think-loader span:nth-child(1) { animation-delay: -0.32s; }
+        .think-loader span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col font-sans overflow-hidden selection:bg-indigo-500/30">
+
+    <div class="ambient-glow"></div>
+
+    <!-- Header (Glassmorphism) -->
+    <header class="absolute top-0 w-full z-20 backdrop-blur-xl bg-dark/60 border-b border-white/5">
+        <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="ph-fill ph-sparkle text-white text-sm"></i>
+                </div>
+                <h1 class="text-sm font-medium tracking-wide text-zinc-100">Gemini</h1>
+            </div>
+            <button onclick="clearChat()" class="text-zinc-500 hover:text-zinc-200 transition-colors flex items-center gap-2 text-sm px-3 py-1.5 rounded-full hover:bg-surface" title="Новый диалог">
+                <i class="ph ph-plus text-lg"></i>
+                <span class="hidden sm:inline">Новый чат</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Chat Area -->
+    <main id="chat-container" class="flex-1 overflow-y-auto w-full pt-20 pb-40 scroll-smooth">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 w-full flex flex-col gap-8" id="chat-content">
+            
+            <!-- Welcome Screen -->
+            <div id="welcome-screen" class="flex flex-col items-center justify-center h-[60vh] text-center animate-fade-in-up">
+                <div class="w-20 h-20 mb-8 rounded-3xl bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-white/5 relative">
+                    <div class="absolute inset-0 rounded-3xl bg-indigo-500/10 blur-xl"></div>
+                    <i class="ph-duotone ph-magic-wand text-4xl text-indigo-400 relative z-10"></i>
+                </div>
+                <h2 class="text-2xl font-semibold text-zinc-100 mb-3 tracking-tight">Чем могу помочь сегодня?</h2>
+                <p class="text-zinc-500 text-sm max-w-md leading-relaxed">
+                    Задавайте вопросы, просите написать код или используйте кнопку с изображением, чтобы сгенерировать картинку.
+                </p>
+                <div class="mt-8 flex flex-wrap justify-center gap-2">
+                    <button onclick="prefill('Напиши код простой игры на Python')" class="px-4 py-2 rounded-full border border-white/5 bg-surface hover:bg-surfaceHover text-xs text-zinc-400 transition-colors">🎮 Код игры на Python</button>
+                    <button onclick="prefillImage('Киберпанк город будущего, дождь, неоновые огни, высокое качество')" class="px-4 py-2 rounded-full border border-white/5 bg-surface hover:bg-surfaceHover text-xs text-zinc-400 transition-colors">🏙️ Нарисовать город</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Floating Input Area -->
+    <footer class="absolute bottom-0 w-full bg-gradient-to-t from-dark via-dark to-transparent pt-10 pb-6 px-4 z-20">
+        <div class="max-w-3xl mx-auto relative">
+            <div class="bg-surface/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-2 flex items-end gap-2 shadow-2xl transition-all focus-within:border-indigo-500/50 focus-within:bg-surface focus-within:shadow-indigo-500/10">
+                
+                <!-- Action Buttons (Left) -->
+                <div class="flex items-center pb-1 pl-1">
+                    <button id="btn-image" class="p-2.5 text-zinc-400 hover:text-indigo-400 hover:bg-white/5 rounded-full transition-all group relative" title="Создать картинку">
+                        <i class="ph ph-image text-xl"></i>
+                        <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 hidden group-hover:block w-max bg-zinc-800 text-zinc-200 text-xs px-2.5 py-1.5 rounded-lg shadow-xl">Сгенерировать картинку</span>
+                    </button>
+                </div>
+
+                <!-- Textarea -->
+                <textarea id="message-input" rows="1" 
+                    class="w-full bg-transparent text-zinc-100 placeholder-zinc-500 px-2 py-3 resize-none outline-none max-h-[200px] text-base leading-relaxed"
+                    placeholder="Спросите Gemini о чем угодно..."></textarea>
+
+                <!-- Send Button (Right) -->
+                <div class="flex items-center pb-1 pr-1">
+                    <button id="btn-send" class="p-2.5 bg-zinc-100 hover:bg-white text-zinc-900 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="ph-fill ph-arrow-up text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <span class="text-[11px] text-zinc-600">Gemini может допускать ошибки. Рекомендуем проверять важную информацию.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Logic -->
+    <script>
+        const apiKey = ""; 
+
+        const chatContainer = document.getElementById('chat-container');
+        const chatContent = document.getElementById('chat-content');
+        const messageInput = document.getElementById('message-input');
+        const btnSend = document.getElementById('btn-send');
+        const btnImage = document.getElementById('btn-image');
+        const welcomeScreen = document.getElementById('welcome-screen');
+
+        let conversationHistory = [];
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if(this.value.trim() === '') this.style.height = 'auto';
+            
+            // Toggle button state
+            btnSend.style.opacity = this.value.trim() ? '1' : '0.5';
+        });
+
+        // Handle Enter
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if(messageInput.value.trim()) handleSendText();
+            }
+        });
+
+        function scrollToBottom() {
+            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
+        }
+
+        function clearChat() {
+            chatContent.innerHTML = '';
+            chatContent.appendChild(welcomeScreen);
+            welcomeScreen.style.display = 'flex';
+            conversationHistory = [];
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            btnSend.style.opacity = '0.5';
+        }
+
+        // Helpers for prompt buttons
+        function prefill(text) {
+            messageInput.value = text;
+            messageInput.dispatchEvent(new Event('input'));
+            messageInput.focus();
+        }
+        function prefillImage(text) {
+            prefill(text);
+            handleGenerateImage();
+        }
+
+        // UI Message Builder
+        function addMessageToUI(content, sender, type = 'text') {
+            welcomeScreen.style.display = 'none';
+
+            const msgWrapper = document.createElement('div');
+            msgWrapper.className = 'w-full animate-fade-in-up';
+
+            if (sender === 'user') {
+                msgWrapper.innerHTML = `
+                    <div class="flex justify-end w-full">
+                        <div class="bg-surface text-zinc-100 px-5 py-3.5 rounded-[1.5rem] rounded-tr-md max-w-[85%] sm:max-w-[70%] border border-white/5 shadow-sm text-[15px] leading-relaxed break-words">
+                            ${content}
+                        </div>
+                    </div>
+                `;
+            } else {
+                let innerContent = '';
+                
+                if (type === 'loading-text') {
+                    msgWrapper.id = 'loading-indicator';
+                    innerContent = `<div class="think-loader h-6 mt-1"><span></span><span></span><span></span></div>`;
+                } else if (type === 'loading-image') {
+                    msgWrapper.id = 'loading-indicator';
+                    innerContent = `
+                        <div class="flex items-center gap-3 text-indigo-400 bg-indigo-500/10 px-4 py-3 rounded-2xl border border-indigo-500/20 w-fit">
+                            <i class="ph-duotone ph-palette text-xl animate-pulse"></i>
+                            <span class="text-sm font-medium">Рисую изображение...</span>
+                        </div>`;
+                } else if (type === 'image') {
+                    innerContent = `
+                        <div class="relative group w-fit">
+                            <img src="${content}" class="rounded-2xl max-w-full sm:max-w-md h-auto object-cover border border-white/10 shadow-lg" alt="Сгенерированное изображение" loading="lazy"/>
+                            <a href="${content}" download="gemini_image.png" class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/80">
+                                <i class="ph ph-download-simple text-lg"></i>
+                            </a>
+                        </div>
+                    `;
+                } else if (type === 'error') {
+                    innerContent = `
+                        <div class="flex items-start gap-3 bg-red-500/10 text-red-400 px-4 py-3 rounded-2xl border border-red-500/20">
+                            <i class="ph-fill ph-warning-circle text-xl shrink-0 mt-0.5"></i>
+                            <span class="text-sm">${DOMPurify.sanitize(content)}</span>
+                        </div>`;
+                } else {
+                    const rawHtml = marked.parse(content);
+                    const safeHtml = DOMPurify.sanitize(rawHtml);
+                    innerContent = `<div class="prose prose-invert prose-zinc max-w-none text-[15px] leading-relaxed">${safeHtml}</div>`;
+                }
+
+                // AI Avatar + Content Layout
+                msgWrapper.innerHTML = `
+                    <div class="flex gap-4 w-full items-start">
+                        <div class="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 mt-1">
+                            <i class="ph-fill ph-sparkle text-indigo-400 text-sm"></i>
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            ${innerContent}
+                        </div>
+                    </div>
+                `;
+            }
+
+            chatContent.appendChild(msgWrapper);
+            scrollToBottom();
+            return msgWrapper;
+        }
+
+        function removeLoadingIndicator() {
+            const loader = document.getElementById('loading-indicator');
+            if (loader) loader.remove();
+        }
+
+        // --- API Integration ---
+        async function fetchWithRetry(url, options, retries = 5) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errText}`);
+                    }
+                    return await response.json();
+                } catch (err) {
+                    if (i === retries - 1) throw err;
+                    await new Promise(r => setTimeout(r, delays[i]));
+                }
+            }
+        }
+
+        async function callTextAPI(prompt) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            conversationHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const recentHistory = conversationHistory.slice(-10);
+
+            const payload = {
+                contents: recentHistory,
+                systemInstruction: { parts: [{ text: "Ты ИИ-ассистент Gemini. Отвечай кратко, емко, используй Markdown. Язык: русский." }] }
+            };
+
+            try {
+                const data = await fetchWithRetry(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (replyText) {
+                    conversationHistory.push({ role: "model", parts: [{ text: replyText }] });
+                    return replyText;
+                } else throw new Error("Нет текста");
+            } catch (error) {
+                conversationHistory.pop(); 
+                throw error;
+            }
+        }
+
+        async function callImageAPI(prompt) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+            const payload = { instances: { prompt: prompt }, parameters: { sampleCount: 1 } };
+            const data = await fetchWithRetry(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (data.predictions && data.predictions[0] && data.predictions[0].bytesBase64Encoded) {
+                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+            }
+            throw new Error("Ошибка API");
+        }
+
+        // --- Handlers ---
+        async function handleSendText() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            btnSend.style.opacity = '0.5';
+            
+            addMessageToUI(text, 'user', 'text');
+            addMessageToUI('', 'ai', 'loading-text');
+
+            try {
+                const response = await callTextAPI(text);
+                removeLoadingIndicator();
+                addMessageToUI(response, 'ai', 'text');
+            } catch (error) {
+                removeLoadingIndicator();
+                addMessageToUI(`Ошибка: Не удалось подключиться к нейросети.`, 'ai', 'error');
+            }
+        }
+
+        async function handleGenerateImage() {
+            const text = messageInput.value.trim();
+            if (!text) {
+                messageInput.focus();
+                messageInput.classList.add('ring-2', 'ring-indigo-500');
+                setTimeout(() => messageInput.classList.remove('ring-2', 'ring-indigo-500'), 1000);
+                return;
+            }
+
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            btnSend.style.opacity = '0.5';
+            
+            addMessageToUI(text, 'user', 'text');
+            addMessageToUI('', 'ai', 'loading-image');
+
+            try {
+                const imageUrl = await callImageAPI(text);
+                removeLoadingIndicator();
+                addMessageToUI(imageUrl, 'ai', 'image');
+            } catch (error) {
+                removeLoadingIndicator();
+                addMessageToUI(`Ошибка генерации. Попробуйте изменить запрос.`, 'ai', 'error');
+            }
+        }
+
+        btnSend.addEventListener('click', handleSendText);
+        btnImage.addEventListener('click', handleGenerateImage);
+        
+        // Initial button state
+        btnSend.style.opacity = '0.5';
+    </script>
+</body>
+</html>
