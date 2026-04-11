@@ -1,455 +1,944 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini AI Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pixel Battle - Realtime M3 Expressive</title>
     
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts & Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24..48,400,1,0" rel="stylesheet" />
     
-    <!-- Tailwind CSS & Typography Plugin -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Marked.js -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- DOMPurify -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
                     colors: {
-                        dark: '#09090b',
-                        surface: '#18181b',
-                        surfaceHover: '#27272a',
-                        border: '#27272a',
+                        primary: 'var(--md-sys-color-primary)',
+                        onPrimary: 'var(--md-sys-color-on-primary)',
+                        primaryContainer: 'var(--md-sys-color-primary-container)',
+                        onPrimaryContainer: 'var(--md-sys-color-on-primary-container)',
+                        secondaryContainer: 'var(--md-sys-color-secondary-container)',
+                        onSecondaryContainer: 'var(--md-sys-color-on-secondary-container)',
+                        surface: 'var(--md-sys-color-surface)',
+                        onSurface: 'var(--md-sys-color-on-surface)',
+                        surfaceVariant: 'var(--md-sys-color-surface-variant)',
+                        onSurfaceVariant: 'var(--md-sys-color-on-surface-variant)',
+                        surfaceContainer: 'var(--md-sys-color-surface-container)',
+                        surfaceContainerHigh: 'var(--md-sys-color-surface-container-high)',
+                        surfaceContainerHighest: 'var(--md-sys-color-surface-container-highest)',
+                        outline: 'var(--md-sys-color-outline)',
+                        outlineVariant: 'var(--md-sys-color-outline-variant)',
                     },
-                    animation: {
-                        'fade-in-up': 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        pulseGlow: {
-                            '0%, 100%': { opacity: '1' },
-                            '50%': { opacity: '.5' },
-                        }
+                    boxShadow: {
+                        'm3-1': '0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
+                        'm3-2': '0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15)',
+                        'm3-3': '0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)',
+                        'm3-4': '0px 2px 3px 0px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15)',
+                        'm3-5': '0px 4px 4px 0px rgba(0, 0, 0, 0.3), 0px 8px 12px 6px rgba(0, 0, 0, 0.15)',
                     }
                 }
             }
         }
     </script>
+
     <style>
+        :root {
+            /* Light Theme Expressive */
+            --md-sys-color-primary: #0061a4;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d1e4ff;
+            --md-sys-color-on-primary-container: #001d36;
+            --md-sys-color-secondary-container: #d7e3f8;
+            --md-sys-color-on-secondary-container: #101c2b;
+            --md-sys-color-surface: #fdfcff;
+            --md-sys-color-on-surface: #1a1c1e;
+            --md-sys-color-surface-variant: #dfe2eb;
+            --md-sys-color-on-surface-variant: #43474e;
+            --md-sys-color-surface-container: #f1f0f4;
+            --md-sys-color-surface-container-high: #ebeaef;
+            --md-sys-color-surface-container-highest: #e2e2e6;
+            --md-sys-color-outline: #73777f;
+            --md-sys-color-outline-variant: #c4c6d0;
+            --canvas-bg: #e0e0e0;
+        }
+
+        .dark {
+            /* Dark Theme Expressive */
+            --md-sys-color-primary: #9ecaef;
+            --md-sys-color-on-primary: #003258;
+            --md-sys-color-primary-container: #00497d;
+            --md-sys-color-on-primary-container: #d1e4ff;
+            --md-sys-color-secondary-container: #394a5c;
+            --md-sys-color-on-secondary-container: #d7e3f8;
+            --md-sys-color-surface: #1a1c1e;
+            --md-sys-color-on-surface: #e2e2e6;
+            --md-sys-color-surface-variant: #43474e;
+            --md-sys-color-on-surface-variant: #c3c7cf;
+            --md-sys-color-surface-container: #1e2022;
+            --md-sys-color-surface-container-high: #2b2d31;
+            --md-sys-color-surface-container-highest: #36383c;
+            --md-sys-color-outline: #8d9199;
+            --md-sys-color-outline-variant: #44474e;
+            --canvas-bg: #121212;
+        }
+
         body {
-            background-color: #09090b;
-            color: #e4e4e7;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* Beautiful minimalist scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
+        /* Material 3 Ripple */
+        .ripple-container {
+            position: relative;
+            overflow: hidden;
+            transform: translate3d(0, 0, 0);
         }
-        ::-webkit-scrollbar-track {
-            background: transparent;
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0;
+            transform: scale(0);
+            pointer-events: none;
+            animation: ripple-anim 0.7s cubic-bezier(0.1, 0, 0.1, 1);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3f3f46;
+        @keyframes ripple-anim {
+            0% { transform: scale(0); opacity: 0.25; }
+            100% { transform: scale(4); opacity: 0; }
         }
 
-        /* Ambient Glow Background */
-        .ambient-glow {
+        /* Canvas */
+        #viewport {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            background-color: var(--canvas-bg);
+            touch-action: none; 
+            transition: background-color 0.4s ease;
+        }
+
+        #world-container {
+            position: absolute;
+            transform-origin: 0 0;
+            will-change: transform;
+            z-index: 1;
+        }
+
+        canvas#pixelMap {
+            display: block;
+            image-rendering: pixelated;
+            box-shadow: 0 0 40px rgba(0,0,0,0.3);
+            background-color: #FFFFFF; 
+            cursor: crosshair;
+        }
+
+        /* Grid Overlay (Находится НАД #world-container, но пропускает клики) */
+        #gridCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Pixel Pop Animation */
+        @keyframes pixel-pop {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(6); opacity: 0; }
+        }
+
+        /* Animations */
+        .m3-slide-right {
+            transform: translateX(100%);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .m3-slide-right.active {
+            transform: translateX(0);
+        }
+        .m3-slide-up {
+            transform: translateY(150%);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .m3-slide-up.active {
+            transform: translateY(0);
+        }
+        .m3-fade {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .m3-fade.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #btn-settings {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+        }
+        #btn-settings:hover { transform: scale(1.08) rotate(8deg); }
+        #btn-settings:active { transform: scale(0.95) rotate(-5deg); }
+
+        @keyframes text-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); color: var(--md-sys-color-primary); }
+            100% { transform: scale(1); }
+        }
+        .pop-anim {
+            animation: text-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-block;
+        }
+
+        /* Cooldown Toast */
+        .cooldown-toast {
             position: fixed;
-            top: -100px;
+            top: -120px;
             left: 50%;
             transform: translateX(-50%);
-            width: 600px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
-            filter: blur(60px);
-            z-index: -1;
-            pointer-events: none;
+            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s;
+            z-index: 100;
+        }
+        .cooldown-toast.active { top: 24px; }
+
+        .circular-chart { max-width: 100%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: var(--md-sys-color-surface-variant); stroke-width: 4; }
+        .circle {
+            fill: none; stroke-width: 4; stroke-linecap: round;
+            stroke: var(--md-sys-color-primary); transition: stroke-dasharray 0.1s linear;
         }
 
-        /* Markdown Styles Overrides for cleaner look */
-        .prose pre {
-            background-color: #18181b !important;
-            border: 1px solid #27272a;
-            border-radius: 0.75rem;
-        }
-        .prose code {
-            color: #a78bfa;
-            background-color: #18181b;
-            padding: 0.2rem 0.4rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-        }
-        .prose pre code {
-            color: #e4e4e7;
-            background-color: transparent;
-            padding: 0;
-        }
-        .prose p {
-            margin-top: 0.5em;
-            margin-bottom: 0.5em;
-            line-height: 1.6;
-        }
-        .prose p:first-child { margin-top: 0; }
-        .prose p:last-child { margin-bottom: 0; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--md-sys-color-outline); border-radius: 4px; }
 
-        /* Loader */
-        .think-loader {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        .m3-switch {
+            appearance: none;
+            width: 52px; height: 32px;
+            background-color: var(--md-sys-color-surface-variant);
+            border: 2px solid var(--md-sys-color-outline);
+            border-radius: 16px; position: relative; cursor: pointer; outline: none;
+            transition: background-color 0.3s, border-color 0.3s;
         }
-        .think-loader span {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: #a1a1aa;
-            animation: bounce 1.4s infinite ease-in-out both;
+        .m3-switch::after {
+            content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px;
+            background-color: var(--md-sys-color-outline); border-radius: 50%;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s, width 0.2s;
         }
-        .think-loader span:nth-child(1) { animation-delay: -0.32s; }
-        .think-loader span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+        .m3-switch:active::after { width: 30px; }
+        .m3-switch:checked { background-color: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
+        .m3-switch:checked::after { transform: translateX(20px); background-color: var(--md-sys-color-on-primary); }
+        .m3-switch:checked:active::after { transform: translateX(14px); }
+
+        #color-palette { scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        #color-palette > * { scroll-snap-align: center; }
+
+        /* Animation for Checkmark in palette */
+        @keyframes scaleIn {
+            0% { transform: scale(0) rotate(-45deg); }
+            100% { transform: scale(1) rotate(0); }
         }
+        .scale-in { animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     </style>
 </head>
-<body class="h-screen flex flex-col font-sans overflow-hidden selection:bg-indigo-500/30">
+<body class="antialiased">
 
-    <div class="ambient-glow"></div>
+    <!-- Viewport & Canvas Layers -->
+    <div id="viewport">
+        <div id="world-container">
+            <canvas id="pixelMap" width="1000" height="1000"></canvas>
+            <div id="reference-layer"></div>
+        </div>
+        <!-- Выделенный слой сетки, который рендерится JS (идеальное масштабирование без тормозов) -->
+        <canvas id="gridCanvas"></canvas>
+    </div>
 
-    <!-- Header (Glassmorphism) -->
-    <header class="absolute top-0 w-full z-20 backdrop-blur-xl bg-dark/60 border-b border-white/5">
-        <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <i class="ph-fill ph-sparkle text-white text-sm"></i>
-                </div>
-                <h1 class="text-sm font-medium tracking-wide text-zinc-100">Gemini</h1>
-            </div>
-            <button onclick="clearChat()" class="text-zinc-500 hover:text-zinc-200 transition-colors flex items-center gap-2 text-sm px-3 py-1.5 rounded-full hover:bg-surface" title="Новый диалог">
-                <i class="ph ph-plus text-lg"></i>
-                <span class="hidden sm:inline">Новый чат</span>
+    <!-- Top Status Bar (Google M3 Style Card) -->
+    <div class="fixed top-6 left-6 z-40 bg-surfaceContainer border border-outlineVariant text-onSurface shadow-m3-2 rounded-[24px] pl-2 pr-5 py-2 flex items-center gap-3 backdrop-blur-md transition-transform hover:scale-105 cursor-default">
+        <div class="relative w-10 h-10 bg-secondaryContainer rounded-full flex items-center justify-center text-onSecondaryContainer">
+            <span class="material-symbols-rounded text-[22px]">public</span>
+            <!-- Status Dot (Green) -->
+            <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surfaceContainer rounded-full"></span>
+        </div>
+        <div class="flex flex-col justify-center">
+            <span class="text-[11px] font-bold tracking-wider text-primary uppercase leading-tight">Статус сервера</span>
+            <span id="online-counter" class="text-[14px] font-medium leading-tight text-onSurface pop-anim">Подключение...</span>
+        </div>
+    </div>
+
+    <!-- FAB Settings -->
+    <button id="btn-settings" class="fixed top-6 right-6 z-40 w-16 h-16 bg-primaryContainer text-onPrimaryContainer rounded-[20px] shadow-m3-4 flex items-center justify-center ripple-container">
+        <span class="material-symbols-rounded text-[28px]">palette</span>
+    </button>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 m3-fade backdrop-blur-sm"></div>
+
+    <!-- Right Sidebar (Settings) -->
+    <div id="sidebar-settings" class="fixed top-0 right-0 h-full w-[420px] max-w-[90vw] bg-surfaceContainer shadow-m3-5 z-50 m3-slide-right flex flex-col rounded-l-[32px] p-8 overflow-y-auto border-l border-outlineVariant/30">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-medium text-onSurface tracking-tight">Настройки</h2>
+            <button id="btn-close-settings" class="w-12 h-12 rounded-full flex items-center justify-center text-onSurfaceVariant hover:bg-surfaceVariant hover:text-onSurface ripple-container transition-colors">
+                <span class="material-symbols-rounded text-[28px]">close</span>
             </button>
         </div>
-    </header>
 
-    <!-- Chat Area -->
-    <main id="chat-container" class="flex-1 overflow-y-auto w-full pt-20 pb-40 scroll-smooth">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 w-full flex flex-col gap-8" id="chat-content">
-            
-            <!-- Welcome Screen -->
-            <div id="welcome-screen" class="flex flex-col items-center justify-center h-[60vh] text-center animate-fade-in-up">
-                <div class="w-20 h-20 mb-8 rounded-3xl bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-white/5 relative">
-                    <div class="absolute inset-0 rounded-3xl bg-indigo-500/10 blur-xl"></div>
-                    <i class="ph-duotone ph-magic-wand text-4xl text-indigo-400 relative z-10"></i>
-                </div>
-                <h2 class="text-2xl font-semibold text-zinc-100 mb-3 tracking-tight">Чем могу помочь сегодня?</h2>
-                <p class="text-zinc-500 text-sm max-w-md leading-relaxed">
-                    Задавайте вопросы, просите написать код или используйте кнопку с изображением, чтобы сгенерировать картинку.
-                </p>
-                <div class="mt-8 flex flex-wrap justify-center gap-2">
-                    <button onclick="prefill('Напиши код простой игры на Python')" class="px-4 py-2 rounded-full border border-white/5 bg-surface hover:bg-surfaceHover text-xs text-zinc-400 transition-colors">🎮 Код игры на Python</button>
-                    <button onclick="prefillImage('Киберпанк город будущего, дождь, неоновые огни, высокое качество')" class="px-4 py-2 rounded-full border border-white/5 bg-surface hover:bg-surfaceHover text-xs text-zinc-400 transition-colors">🏙️ Нарисовать город</button>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Floating Input Area -->
-    <footer class="absolute bottom-0 w-full bg-gradient-to-t from-dark via-dark to-transparent pt-10 pb-6 px-4 z-20">
-        <div class="max-w-3xl mx-auto relative">
-            <div class="bg-surface/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-2 flex items-end gap-2 shadow-2xl transition-all focus-within:border-indigo-500/50 focus-within:bg-surface focus-within:shadow-indigo-500/10">
-                
-                <!-- Action Buttons (Left) -->
-                <div class="flex items-center pb-1 pl-1">
-                    <button id="btn-image" class="p-2.5 text-zinc-400 hover:text-indigo-400 hover:bg-white/5 rounded-full transition-all group relative" title="Создать картинку">
-                        <i class="ph ph-image text-xl"></i>
-                        <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 hidden group-hover:block w-max bg-zinc-800 text-zinc-200 text-xs px-2.5 py-1.5 rounded-lg shadow-xl">Сгенерировать картинку</span>
-                    </button>
-                </div>
-
-                <!-- Textarea -->
-                <textarea id="message-input" rows="1" 
-                    class="w-full bg-transparent text-zinc-100 placeholder-zinc-500 px-2 py-3 resize-none outline-none max-h-[200px] text-base leading-relaxed"
-                    placeholder="Спросите Gemini о чем угодно..."></textarea>
-
-                <!-- Send Button (Right) -->
-                <div class="flex items-center pb-1 pr-1">
-                    <button id="btn-send" class="p-2.5 bg-zinc-100 hover:bg-white text-zinc-900 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="ph-fill ph-arrow-up text-xl"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="text-center mt-3">
-                <span class="text-[11px] text-zinc-600">Gemini может допускать ошибки. Рекомендуем проверять важную информацию.</span>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Logic -->
-    <script>
-        const apiKey = ""; 
-
-        const chatContainer = document.getElementById('chat-container');
-        const chatContent = document.getElementById('chat-content');
-        const messageInput = document.getElementById('message-input');
-        const btnSend = document.getElementById('btn-send');
-        const btnImage = document.getElementById('btn-image');
-        const welcomeScreen = document.getElementById('welcome-screen');
-
-        let conversationHistory = [];
-
-        marked.setOptions({ breaks: true, gfm: true });
-
-        // Auto-resize textarea
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            if(this.value.trim() === '') this.style.height = 'auto';
-            
-            // Toggle button state
-            btnSend.style.opacity = this.value.trim() ? '1' : '0.5';
-        });
-
-        // Handle Enter
-        messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                if(messageInput.value.trim()) handleSendText();
-            }
-        });
-
-        function scrollToBottom() {
-            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
-        }
-
-        function clearChat() {
-            chatContent.innerHTML = '';
-            chatContent.appendChild(welcomeScreen);
-            welcomeScreen.style.display = 'flex';
-            conversationHistory = [];
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-            btnSend.style.opacity = '0.5';
-        }
-
-        // Helpers for prompt buttons
-        function prefill(text) {
-            messageInput.value = text;
-            messageInput.dispatchEvent(new Event('input'));
-            messageInput.focus();
-        }
-        function prefillImage(text) {
-            prefill(text);
-            handleGenerateImage();
-        }
-
-        // UI Message Builder
-        function addMessageToUI(content, sender, type = 'text') {
-            welcomeScreen.style.display = 'none';
-
-            const msgWrapper = document.createElement('div');
-            msgWrapper.className = 'w-full animate-fade-in-up';
-
-            if (sender === 'user') {
-                msgWrapper.innerHTML = `
-                    <div class="flex justify-end w-full">
-                        <div class="bg-surface text-zinc-100 px-5 py-3.5 rounded-[1.5rem] rounded-tr-md max-w-[85%] sm:max-w-[70%] border border-white/5 shadow-sm text-[15px] leading-relaxed break-words">
-                            ${content}
-                        </div>
+        <div class="flex flex-col gap-4">
+            <!-- Theme Card -->
+            <div class="bg-surfaceContainerHigh p-5 rounded-[24px] flex flex-col gap-1 shadow-sm border border-outlineVariant/20">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-lg font-medium text-onSurface">Тёмная тема</div>
+                        <div class="text-[13px] text-onSurfaceVariant mt-0.5">Интерфейс M3 Expressive</div>
                     </div>
-                `;
-            } else {
-                let innerContent = '';
+                    <input type="checkbox" id="toggle-theme" class="m3-switch" checked>
+                </div>
+            </div>
+
+            <!-- Grid Card -->
+            <div class="bg-surfaceContainerHigh p-5 rounded-[24px] flex flex-col gap-1 shadow-sm border border-outlineVariant/20">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-lg font-medium text-onSurface">Сетка пикселей</div>
+                        <div class="text-[13px] text-onSurfaceVariant mt-0.5">Отображать при увеличении</div>
+                    </div>
+                    <input type="checkbox" id="toggle-grid" class="m3-switch" checked>
+                </div>
+            </div>
+
+            <!-- References Card -->
+            <div class="bg-surfaceContainerHigh p-5 rounded-[24px] flex flex-col gap-4 shadow-sm border border-outlineVariant/20">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-lg font-medium text-onSurface">Референсы</div>
+                        <div class="text-[13px] text-onSurfaceVariant mt-0.5">Оверлей изображений</div>
+                    </div>
+                    <input type="checkbox" id="toggle-references" class="m3-switch">
+                </div>
                 
-                if (type === 'loading-text') {
-                    msgWrapper.id = 'loading-indicator';
-                    innerContent = `<div class="think-loader h-6 mt-1"><span></span><span></span><span></span></div>`;
-                } else if (type === 'loading-image') {
-                    msgWrapper.id = 'loading-indicator';
-                    innerContent = `
-                        <div class="flex items-center gap-3 text-indigo-400 bg-indigo-500/10 px-4 py-3 rounded-2xl border border-indigo-500/20 w-fit">
-                            <i class="ph-duotone ph-palette text-xl animate-pulse"></i>
-                            <span class="text-sm font-medium">Рисую изображение...</span>
-                        </div>`;
-                } else if (type === 'image') {
-                    innerContent = `
-                        <div class="relative group w-fit">
-                            <img src="${content}" class="rounded-2xl max-w-full sm:max-w-md h-auto object-cover border border-white/10 shadow-lg" alt="Сгенерированное изображение" loading="lazy"/>
-                            <a href="${content}" download="gemini_image.png" class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/80">
-                                <i class="ph ph-download-simple text-lg"></i>
-                            </a>
-                        </div>
-                    `;
-                } else if (type === 'error') {
-                    innerContent = `
-                        <div class="flex items-start gap-3 bg-red-500/10 text-red-400 px-4 py-3 rounded-2xl border border-red-500/20">
-                            <i class="ph-fill ph-warning-circle text-xl shrink-0 mt-0.5"></i>
-                            <span class="text-sm">${DOMPurify.sanitize(content)}</span>
-                        </div>`;
+                <div id="ref-settings-group" class="hidden flex-col gap-4 pt-4 border-t border-outline/10">
+                     <div class="flex items-center justify-between">
+                        <div class="text-base font-medium text-onSurface">Двигать референсы</div>
+                        <input type="checkbox" id="toggle-ref-interactive" class="m3-switch" checked>
+                    </div>
+                    <p class="text-[13px] text-onSurfaceVariant leading-relaxed">Отключите, чтобы референсы пропускали клики и вы могли по ним рисовать.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-auto pt-8">
+            <div class="bg-secondaryContainer text-onSecondaryContainer p-6 rounded-[28px] text-base shadow-sm">
+                <p class="font-bold mb-3 text-lg flex items-center gap-2"><span class="material-symbols-rounded">info</span> Управление</p>
+                <ul class="space-y-3 opacity-90 text-sm font-medium">
+                    <li>1. Двигайте холст мышью или касанием.</li>
+                    <li>2. Колесико / щипок для масштабирования.</li>
+                    <li>3. Выберите цвет на нижней панели.</li>
+                    <li>4. Кликните для установки пикселя онлайн!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Panel -->
+    <div class="fixed bottom-0 left-0 w-full z-30 flex justify-center p-6 pointer-events-none">
+        <div id="bottom-panel" class="bg-surfaceContainer border border-outlineVariant/50 shadow-m3-4 rounded-[36px] p-3 flex flex-col gap-3 max-w-[95vw] w-fit m3-slide-up active pointer-events-auto">
+            
+            <!-- Reference controls -->
+            <div id="ref-controls" class="hidden flex items-center gap-5 px-5 py-3 border-b-2 border-outline/10">
+                <label class="flex items-center gap-2 cursor-pointer bg-primaryContainer text-onPrimaryContainer px-5 py-3 rounded-full text-base font-medium ripple-container hover:opacity-90 shadow-sm transition-transform active:scale-95">
+                    <span class="material-symbols-rounded text-[24px]">add_photo_alternate</span>
+                    Добавить
+                    <input type="file" id="ref-upload" accept="image/*" class="hidden">
+                </label>
+                
+                <div class="flex-1 flex items-center gap-4 min-w-[150px]">
+                    <span class="material-symbols-rounded text-onSurfaceVariant text-[24px]">opacity</span>
+                    <input type="range" id="ref-opacity" min="0" max="100" value="50" class="flex-1">
+                </div>
+                
+                <button id="btn-clear-refs" class="text-onSurfaceVariant hover:text-error hover:bg-error/10 p-3 rounded-full ripple-container flex items-center justify-center transition-colors" title="Удалить все">
+                    <span class="material-symbols-rounded text-[24px]">delete</span>
+                </button>
+            </div>
+
+            <!-- Colors Panel -->
+            <div class="flex items-center gap-3 overflow-x-auto p-2" id="color-palette">
+                <!-- Custom Color Picker (Исправленный) -->
+                <div class="flex flex-col items-center gap-1 shrink-0 px-3 border-r-2 border-outline/20">
+                    <label id="custom-color-btn" class="w-12 h-12 rounded-full border-[3px] border-transparent flex items-center justify-center relative overflow-hidden bg-surfaceVariant cursor-pointer hover:scale-110 active:scale-90 transition-all shadow-sm">
+                        <!-- Иконка "Пипетка" по умолчанию -->
+                        <span class="material-symbols-rounded text-onSurfaceVariant z-10 drop-shadow-md transition-colors icon-state pointer-events-none text-[26px]">colorize</span>
+                        <!-- Скрытый инпут растянут на всю кнопку -->
+                        <input type="color" id="custom-color-picker" value="#ff0000" class="absolute -top-4 -left-4 w-20 h-20 opacity-0 cursor-pointer">
+                    </label>
+                </div>
+                <!-- Predefined colors injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cooldown Notification -->
+    <div id="cooldown-toast" class="cooldown-toast bg-surfaceContainerHighest text-onSurface shadow-m3-4 rounded-full flex items-center gap-5 py-3 px-6 border border-outline/10 backdrop-blur-xl">
+        <div class="relative w-10 h-10 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 36 36" class="circular-chart w-10 h-10 absolute inset-0 -rotate-90">
+                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="circle" id="cd-circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            </svg>
+            <span class="material-symbols-rounded text-primary text-[20px] relative z-10">hourglass_empty</span>
+        </div>
+        <div class="flex flex-col pr-3">
+            <span class="text-base font-bold">Пиксель установлен</span>
+            <span class="text-[13px] text-onSurfaceVariant">Ожидание: <span id="cd-text" class="font-bold text-primary">5.0</span> сек</span>
+        </div>
+    </div>
+
+    <!-- Firebase Logic & Application Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pixel-battle-m3';
+        
+        let app, auth, db, userId;
+        let isOnline = false;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch(e) { console.warn("Firebase not configured. Running offline."); }
+
+        // --- Core Application Logic ---
+        const canvas = document.getElementById('pixelMap');
+        const ctx = canvas.getContext('2d', { alpha: false }); 
+        const worldContainer = document.getElementById('world-container');
+        const viewport = document.getElementById('viewport');
+        const refLayer = document.getElementById('reference-layer');
+        const gridCanvas = document.getElementById('gridCanvas');
+        const gridCtx = gridCanvas.getContext('2d');
+        
+        const MAP_SIZE = 1000;
+        
+        const state = {
+            scale: 1,
+            offsetX: 0,
+            offsetY: 0,
+            isDragging: false,
+            dragStartX: 0,
+            dragStartY: 0,
+            selectedColor: '#EF4444', 
+            cooldownUntil: 0,
+            cooldownTime: 5000,
+            refInteractive: true,
+            isGridEnabled: true
+        };
+
+        // Заливка белым цветом в начале
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, MAP_SIZE, MAP_SIZE);
+
+        state.offsetX = (window.innerWidth - MAP_SIZE) / 2;
+        state.offsetY = (window.innerHeight - MAP_SIZE) / 2;
+        updateTransform();
+
+        // --- Realtime / Firebase ---
+        async function initRealtime() {
+            if (!auth) return;
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
-                    const rawHtml = marked.parse(content);
-                    const safeHtml = DOMPurify.sanitize(rawHtml);
-                    innerContent = `<div class="prose prose-invert prose-zinc max-w-none text-[15px] leading-relaxed">${safeHtml}</div>`;
+                    await signInAnonymously(auth);
                 }
+            } catch (error) { return; }
 
-                // AI Avatar + Content Layout
-                msgWrapper.innerHTML = `
-                    <div class="flex gap-4 w-full items-start">
-                        <div class="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 mt-1">
-                            <i class="ph-fill ph-sparkle text-indigo-400 text-sm"></i>
-                        </div>
-                        <div class="flex-1 overflow-hidden">
-                            ${innerContent}
-                        </div>
-                    </div>
-                `;
-            }
-
-            chatContent.appendChild(msgWrapper);
-            scrollToBottom();
-            return msgWrapper;
-        }
-
-        function removeLoadingIndicator() {
-            const loader = document.getElementById('loading-indicator');
-            if (loader) loader.remove();
-        }
-
-        // --- API Integration ---
-        async function fetchWithRetry(url, options, retries = 5) {
-            const delays = [1000, 2000, 4000, 8000, 16000];
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok) {
-                        const errText = await response.text();
-                        throw new Error(`HTTP ${response.status}: ${errText}`);
-                    }
-                    return await response.json();
-                } catch (err) {
-                    if (i === retries - 1) throw err;
-                    await new Promise(r => setTimeout(r, delays[i]));
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    isOnline = true;
+                    setupFirestoreListeners();
+                    startPresenceSystem();
                 }
-            }
-        }
-
-        async function callTextAPI(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            conversationHistory.push({ role: "user", parts: [{ text: prompt }] });
-            const recentHistory = conversationHistory.slice(-10);
-
-            const payload = {
-                contents: recentHistory,
-                systemInstruction: { parts: [{ text: "Ты ИИ-ассистент Gemini. Отвечай кратко, емко, используй Markdown. Язык: русский." }] }
-            };
-
-            try {
-                const data = await fetchWithRetry(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (replyText) {
-                    conversationHistory.push({ role: "model", parts: [{ text: replyText }] });
-                    return replyText;
-                } else throw new Error("Нет текста");
-            } catch (error) {
-                conversationHistory.pop(); 
-                throw error;
-            }
-        }
-
-        async function callImageAPI(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
-            const payload = { instances: { prompt: prompt }, parameters: { sampleCount: 1 } };
-            const data = await fetchWithRetry(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
             });
-
-            if (data.predictions && data.predictions[0] && data.predictions[0].bytesBase64Encoded) {
-                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
-            }
-            throw new Error("Ошибка API");
         }
 
-        // --- Handlers ---
-        async function handleSendText() {
-            const text = messageInput.value.trim();
-            if (!text) return;
+        function setupFirestoreListeners() {
+            if (!userId) return;
+            const pixelsRef = collection(db, 'artifacts', appId, 'public', 'data', 'pixels');
+            onSnapshot(pixelsRef, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added" || change.type === "modified") {
+                        const data = change.doc.data();
+                        drawPixelLocal(data.x, data.y, data.color);
+                    }
+                });
+            });
+        }
 
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-            btnSend.style.opacity = '0.5';
+        function startPresenceSystem() {
+            const presenceRef = collection(db, 'artifacts', appId, 'public', 'data', 'presence');
+            const myPresenceDoc = doc(db, 'artifacts', appId, 'public', 'data', 'presence', userId);
+            const counterEl = document.getElementById('online-counter');
+
+            setInterval(() => {
+                if(isOnline) setDoc(myPresenceDoc, { lastActive: Date.now() }).catch(e=>{});
+            }, 10000); 
+            setDoc(myPresenceDoc, { lastActive: Date.now() }).catch(e=>{});
+
+            onSnapshot(presenceRef, (snapshot) => {
+                let activeCount = 0;
+                const now = Date.now();
+                snapshot.forEach(doc => { if (now - doc.data().lastActive < 30000) activeCount++; });
+                
+                const newText = `${activeCount} чел. онлайн`;
+                if(counterEl.textContent !== newText) {
+                    counterEl.textContent = newText;
+                    counterEl.classList.remove('pop-anim');
+                    void counterEl.offsetWidth; 
+                    counterEl.classList.add('pop-anim');
+                }
+            });
+        }
+
+        // --- Rendering & Transform (with GRID Support) ---
+        function updateTransform() {
+            worldContainer.style.transform = `translate(${state.offsetX}px, ${state.offsetY}px) scale(${state.scale})`;
+            drawGrid(); // Перерисовываем сетку при каждом движении/зуме
+        }
+
+        function drawGrid() {
+            gridCanvas.width = window.innerWidth;
+            gridCanvas.height = window.innerHeight;
+            gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+
+            // Отрисовывать сетку только если включена настройка и масштаб достаточно велик
+            if (!state.isGridEnabled || state.scale < 4) return;
+
+            gridCtx.beginPath();
+            // Цвет сетки адаптируется под тему (Тёмная/Светлая)
+            const isDark = document.documentElement.classList.contains('dark');
+            gridCtx.strokeStyle = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+            gridCtx.lineWidth = 1;
+
+            // Ограничиваем рендер сетки только зоной реального холста
+            const startX = Math.max(0, state.offsetX);
+            const endX = Math.min(window.innerWidth, state.offsetX + MAP_SIZE * state.scale);
+            const startY = Math.max(0, state.offsetY);
+            const endY = Math.min(window.innerHeight, state.offsetY + MAP_SIZE * state.scale);
+
+            // Считаем первую линию
+            let firstLineX = state.offsetX;
+            while (firstLineX < startX) firstLineX += state.scale;
+
+            let firstLineY = state.offsetY;
+            while (firstLineY < startY) firstLineY += state.scale;
+
+            // Вертикальные линии
+            for (let x = firstLineX; x <= endX; x += state.scale) {
+                gridCtx.moveTo(Math.floor(x) + 0.5, startY);
+                gridCtx.lineTo(Math.floor(x) + 0.5, endY);
+            }
+            // Горизонтальные линии
+            for (let y = firstLineY; y <= endY; y += state.scale) {
+                gridCtx.moveTo(startX, Math.floor(y) + 0.5);
+                gridCtx.lineTo(endX, Math.floor(y) + 0.5);
+            }
+            gridCtx.stroke();
+        }
+        
+        window.addEventListener('resize', drawGrid); // Сетка обновляется при ресайзе окна
+
+        function drawPixelLocal(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, 1, 1);
+        }
+
+        function createPixelPop(x, y, color) {
+            const pop = document.createElement('div');
+            pop.style.position = 'absolute';
+            pop.style.left = `${x}px`;
+            pop.style.top = `${y}px`;
+            pop.style.width = '1px'; pop.style.height = '1px';
+            pop.style.backgroundColor = color;
+            pop.style.borderRadius = '50%';
+            pop.style.pointerEvents = 'none';
+            pop.style.boxShadow = `0 0 2px ${color}`;
+            pop.style.zIndex = '10';
+            pop.style.transformOrigin = 'center';
+            pop.style.animation = 'pixel-pop 0.4s cubic-bezier(0.05, 0.7, 0.1, 1) forwards';
+            worldContainer.appendChild(pop);
+            setTimeout(() => pop.remove(), 400);
+        }
+
+        async function placePixelRemote(x, y, color) {
+            if (!isOnline || !userId) return;
+            const pixelDoc = doc(db, 'artifacts', appId, 'public', 'data', 'pixels', `${x}_${y}`);
+            try { await setDoc(pixelDoc, { x, y, color, t: Date.now() }); } catch (e) {}
+        }
+
+        // --- Mouse / Touch Events ---
+        viewport.addEventListener('mousedown', (e) => {
+            if (e.target.closest('#bottom-panel') || e.target.closest('#btn-settings') || e.target.closest('#sidebar-settings') || e.target.closest('.fixed')) return;
+            if (e.target.classList.contains('reference-img') && state.refInteractive) return;
+
+            state.isDragging = true;
+            state.dragStartX = e.clientX - state.offsetX;
+            state.dragStartY = e.clientY - state.offsetY;
+            viewport.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!state.isDragging) return;
+            state.offsetX = e.clientX - state.dragStartX;
+            state.offsetY = e.clientY - state.dragStartY;
+            updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            if(state.isDragging) {
+                state.isDragging = false;
+                viewport.style.cursor = 'crosshair';
+            }
+        });
+
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const pointerX = e.clientX;
+            const pointerY = e.clientY;
             
-            addMessageToUI(text, 'user', 'text');
-            addMessageToUI('', 'ai', 'loading-text');
+            const zoomSpeed = 0.002;
+            const zoomDelta = Math.exp(-e.deltaY * zoomSpeed);
+            let newScale = state.scale * zoomDelta;
+            newScale = Math.max(0.1, Math.min(newScale, 50));
+            
+            const factor = newScale / state.scale;
+            state.offsetX = pointerX - (pointerX - state.offsetX) * factor;
+            state.offsetY = pointerY - (pointerY - state.offsetY) * factor;
+            state.scale = newScale;
+            updateTransform();
+        }, { passive: false });
 
-            try {
-                const response = await callTextAPI(text);
-                removeLoadingIndicator();
-                addMessageToUI(response, 'ai', 'text');
-            } catch (error) {
-                removeLoadingIndicator();
-                addMessageToUI(`Ошибка: Не удалось подключиться к нейросети.`, 'ai', 'error');
+        let initialPinchDistance = null;
+        let initialScale = 1;
+
+        viewport.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.interactive-ui') || e.target.closest('.fixed')) return; 
+
+            if (e.touches.length === 1) {
+                if (e.target.classList.contains('reference-img') && state.refInteractive) return;
+                state.isDragging = true;
+                state.dragStartX = e.touches[0].clientX - state.offsetX;
+                state.dragStartY = e.touches[0].clientY - state.offsetY;
+            } else if (e.touches.length === 2) {
+                state.isDragging = false;
+                initialPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                initialScale = state.scale;
             }
-        }
+        }, { passive: false });
 
-        async function handleGenerateImage() {
-            const text = messageInput.value.trim();
-            if (!text) {
-                messageInput.focus();
-                messageInput.classList.add('ring-2', 'ring-indigo-500');
-                setTimeout(() => messageInput.classList.remove('ring-2', 'ring-indigo-500'), 1000);
+        viewport.addEventListener('touchmove', (e) => {
+            if (state.isDragging && e.touches.length === 1) {
+                state.offsetX = e.touches[0].clientX - state.dragStartX;
+                state.offsetY = e.touches[0].clientY - state.dragStartY;
+                updateTransform();
+            } else if (e.touches.length === 2 && initialPinchDistance) {
+                const currentDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                
+                const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+                let newScale = initialScale * (currentDistance / initialPinchDistance);
+                newScale = Math.max(0.1, Math.min(newScale, 50));
+
+                const factor = newScale / state.scale;
+                state.offsetX = centerX - (centerX - state.offsetX) * factor;
+                state.offsetY = centerY - (centerY - state.offsetY) * factor;
+                state.scale = newScale;
+                updateTransform();
+            }
+        }, { passive: false });
+
+        viewport.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) initialPinchDistance = null;
+            if (e.touches.length === 0) state.isDragging = false;
+        });
+
+        // Pixel Click Placement
+        canvas.addEventListener('click', (e) => {
+            if(state.isDragging) return;
+
+            const now = Date.now();
+            if (now < state.cooldownUntil) {
+                const toast = document.getElementById('cooldown-toast');
+                toast.style.transform = 'translateX(-50%) scale(1.05)';
+                setTimeout(() => toast.style.transform = 'translateX(-50%) scale(1)', 150);
                 return;
             }
 
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-            btnSend.style.opacity = '0.5';
-            
-            addMessageToUI(text, 'user', 'text');
-            addMessageToUI('', 'ai', 'loading-image');
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / state.scale);
+            const y = Math.floor((e.clientY - rect.top) / state.scale);
 
-            try {
-                const imageUrl = await callImageAPI(text);
-                removeLoadingIndicator();
-                addMessageToUI(imageUrl, 'ai', 'image');
-            } catch (error) {
-                removeLoadingIndicator();
-                addMessageToUI(`Ошибка генерации. Попробуйте изменить запрос.`, 'ai', 'error');
+            if (x >= 0 && x < MAP_SIZE && y >= 0 && y < MAP_SIZE) {
+                drawPixelLocal(x, y, state.selectedColor);
+                createPixelPop(x, y, state.selectedColor);
+                placePixelRemote(x, y, state.selectedColor);
+                startCooldown();
+            }
+        });
+
+        function startCooldown() {
+            state.cooldownUntil = Date.now() + state.cooldownTime;
+            document.getElementById('cooldown-toast').classList.add('active');
+            requestAnimationFrame(updateCooldownUI);
+        }
+
+        function updateCooldownUI() {
+            const now = Date.now();
+            const remaining = state.cooldownUntil - now;
+
+            if (remaining <= 0) {
+                document.getElementById('cooldown-toast').classList.remove('active');
+                return;
+            }
+            document.getElementById('cd-text').textContent = (remaining / 1000).toFixed(1);
+            const percent = remaining / state.cooldownTime;
+            document.getElementById('cd-circle').setAttribute('stroke-dasharray', `${percent * 100}, 100`);
+            requestAnimationFrame(updateCooldownUI);
+        }
+
+        // --- Safe Color Selection Logic ---
+        const colors =[
+            '#000000', '#4A4A4A', '#FFFFFF', '#FFD1D1',
+            '#EF4444', '#F97316', '#F59E0B', '#EAB308',
+            '#84CC16', '#22C55E', '#10B981', '#14B8A6',
+            '#06B6D4', '#0EA5E9', '#3B82F6', '#6366F1',
+            '#8B5CF6', '#A855F7', '#D946EF', '#F43F5E'
+        ];
+
+        const paletteContainer = document.getElementById('color-palette');
+        let activeColorBtn = null;
+
+        function updateSelectedStyle(btnElement, colorHex, isCustom = false) {
+            // Сбрасываем старую кнопку
+            if(activeColorBtn) {
+                activeColorBtn.classList.replace('border-primary', 'border-transparent');
+                const oldIcon = activeColorBtn.querySelector('.icon-state');
+                if(oldIcon) {
+                    if(activeColorBtn.id === 'custom-color-btn') {
+                        oldIcon.textContent = 'colorize'; 
+                    } else {
+                        oldIcon.classList.add('hidden');
+                    }
+                }
+            }
+            
+            // Назначаем новую кнопку
+            activeColorBtn = btnElement;
+            activeColorBtn.classList.replace('border-transparent', 'border-primary');
+            
+            const rgb = hexToRgb(colorHex);
+            const brightness = rgb ? (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000 : 0;
+            const iconColor = brightness > 125 ? 'text-black' : 'text-white';
+            
+            const newIcon = activeColorBtn.querySelector('.icon-state');
+            if(newIcon) {
+                newIcon.className = `material-symbols-rounded z-10 drop-shadow-md scale-in icon-state pointer-events-none text-[26px] ${iconColor}`;
+                if(isCustom) {
+                    newIcon.textContent = 'check';
+                } else {
+                    newIcon.textContent = 'check';
+                    newIcon.classList.remove('hidden');
+                }
             }
         }
 
-        btnSend.addEventListener('click', handleSendText);
-        btnImage.addEventListener('click', handleGenerateImage);
+        colors.forEach(color => {
+            const btn = document.createElement('button');
+            btn.className = 'w-12 h-12 rounded-full flex-shrink-0 border-[3px] border-transparent transition-all hover:scale-110 active:scale-90 relative interactive-ui shadow-sm flex items-center justify-center';
+            btn.style.backgroundColor = color;
+            
+            const icon = document.createElement('span');
+            icon.className = 'material-symbols-rounded hidden z-10 drop-shadow-md scale-in icon-state pointer-events-none text-[26px]';
+            icon.textContent = 'check';
+            btn.appendChild(icon);
+
+            btn.onclick = () => {
+                state.selectedColor = color;
+                updateSelectedStyle(btn, color, false);
+            };
+            paletteContainer.appendChild(btn);
+
+            if(color === '#EF4444') {
+                state.selectedColor = color;
+                updateSelectedStyle(btn, color, false);
+            }
+        });
+
+        // Настраиваем Custom Color Button
+        const customColorBtn = document.getElementById('custom-color-btn');
+        const customColorPicker = document.getElementById('custom-color-picker');
         
-        // Initial button state
-        btnSend.style.opacity = '0.5';
+        customColorPicker.addEventListener('input', (e) => {
+            const val = e.target.value;
+            state.selectedColor = val;
+            customColorBtn.style.backgroundColor = val;
+            updateSelectedStyle(customColorBtn, val, true);
+        });
+
+        customColorPicker.addEventListener('click', (e) => {
+            const val = e.target.value;
+            state.selectedColor = val;
+            updateSelectedStyle(customColorBtn, val, true);
+        });
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+        }
+
+        // --- UI Interactions ---
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+            const rect = button.getBoundingClientRect();
+            let x = (event.type.includes('touch') ? event.touches[0].clientX : event.clientX) - rect.left - radius;
+            let y = (event.type.includes('touch') ? event.touches[0].clientY : event.clientY) - rect.top - radius;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${x}px`; circle.style.top = `${y}px`;
+            circle.classList.add("ripple");
+
+            const existing = button.querySelector('.ripple');
+            if (existing) existing.remove();
+            button.appendChild(circle);
+            setTimeout(() => circle.remove(), 700);
+        }
+
+        document.querySelectorAll('.ripple-container').forEach(btn => {
+            btn.addEventListener('mousedown', createRipple);
+            btn.addEventListener('touchstart', createRipple, {passive: true});
+        });
+
+        const sidebarSettings = document.getElementById('sidebar-settings');
+        const overlay = document.getElementById('overlay');
+        
+        function openSettings() { sidebarSettings.classList.add('active'); overlay.classList.add('active'); }
+        function closeSettings() { sidebarSettings.classList.remove('active'); overlay.classList.remove('active'); }
+
+        document.getElementById('btn-settings').addEventListener('click', openSettings);
+        document.getElementById('btn-close-settings').addEventListener('click', closeSettings);
+        overlay.addEventListener('click', closeSettings);
+
+        // Settings toggles
+        document.getElementById('toggle-theme').addEventListener('change', (e) => {
+            document.documentElement.classList.toggle('dark', e.target.checked);
+            drawGrid(); // Перерисовать сетку под новые цвета
+        });
+
+        document.getElementById('toggle-grid').addEventListener('change', (e) => {
+            state.isGridEnabled = e.target.checked;
+            drawGrid();
+        });
+
+        document.getElementById('toggle-references').addEventListener('change', (e) => {
+            const controls = document.getElementById('ref-controls');
+            const group = document.getElementById('ref-settings-group');
+            if(e.target.checked) {
+                controls.classList.remove('hidden');
+                group.classList.remove('hidden'); group.classList.add('flex');
+            } else {
+                controls.classList.add('hidden');
+                group.classList.add('hidden'); group.classList.remove('flex');
+            }
+        });
+
+        document.getElementById('toggle-ref-interactive').addEventListener('change', (e) => {
+            state.refInteractive = e.target.checked;
+            document.querySelectorAll('.reference-img').forEach(img => {
+                img.classList.toggle('interactive', state.refInteractive);
+            });
+        });
+
+        // References
+        document.getElementById('ref-upload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                img.className = `reference-img ${state.refInteractive ? 'interactive' : ''}`;
+                img.style.opacity = document.getElementById('ref-opacity').value / 100;
+                img.style.left = `${MAP_SIZE/2}px`; img.style.top = `${MAP_SIZE/2}px`;
+                img.style.transform = 'translate(-50%, -50%)'; 
+                setupReferenceDragging(img);
+                refLayer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('ref-opacity').addEventListener('input', (e) => {
+            document.querySelectorAll('.reference-img').forEach(img => img.style.opacity = e.target.value / 100);
+        });
+
+        document.getElementById('btn-clear-refs').addEventListener('click', () => refLayer.innerHTML = '');
+
+        function setupReferenceDragging(imgElement) {
+            let isDraggingRef = false, refStartX, refStartY, initialLeft, initialTop;
+
+            const startDrag = (x, y) => {
+                if(!state.refInteractive) return;
+                isDraggingRef = true;
+                refStartX = x; refStartY = y;
+                initialLeft = parseFloat(imgElement.style.left) || 0;
+                initialTop = parseFloat(imgElement.style.top) || 0;
+            };
+
+            const moveDrag = (x, y) => {
+                if(!isDraggingRef) return;
+                imgElement.style.left = `${initialLeft + (x - refStartX) / state.scale}px`;
+                imgElement.style.top = `${initialTop + (y - refStartY) / state.scale}px`;
+            };
+
+            imgElement.addEventListener('mousedown', (e) => { e.stopPropagation(); startDrag(e.clientX, e.clientY); });
+            window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+            window.addEventListener('mouseup', () => isDraggingRef = false);
+
+            imgElement.addEventListener('touchstart', (e) => {
+                if(e.touches.length > 1) return;
+                e.stopPropagation(); startDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }, {passive: false});
+            window.addEventListener('touchmove', (e) => {
+                if(isDraggingRef) { e.stopPropagation(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); }
+            }, {passive: false});
+            window.addEventListener('touchend', () => isDraggingRef = false);
+        }
+
+        initRealtime();
     </script>
 </body>
 </html>
